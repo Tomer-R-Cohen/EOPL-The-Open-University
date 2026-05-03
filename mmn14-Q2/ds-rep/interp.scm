@@ -76,12 +76,39 @@
         (get-type-exp (id)
           (let ((val (value-of id env)))
             (cases expval val
-              (num-val (n) (num-type))
-              (bool-val (b) (bool-type))
-              (proc-val (p) (proc-type)))))
+              (num-val (n) (exp-type (num-type)))
+              (bool-val (b) (exp-type (bool-type)))
+              (proc-val (p) (exp-type (proc-type))))))
 
         (isBool?-exp (ex)
-          ())
+          (let ((val (value-of ex env)))
+            (cases expval val
+              (bool-val (b) (bool-val #t))
+              (exp-type (t)
+                (cases type t
+                  (bool-type () (bool-val #t))
+                  (else (bool-val #f))))
+              (else (bool-val #f)))))
+
+        (isNum?-exp (ex)
+          (let ((val (value-of ex env)))
+            (cases expval val
+              (num-val (n) (bool-val #t))
+              (exp-type (t)
+                (cases type t
+                  (num-type () (bool-val #t))
+                  (else (bool-val #f))))
+              (else (bool-val #f)))))
+
+        (isProc?-exp (ex)
+          (let ((val (value-of ex env)))
+            (cases expval val
+              (proc-val (p) (bool-val #t))
+              (exp-type (t)
+                (cases type t
+                  (proc-type () (bool-val #t))
+                  (else (bool-val #f))))
+              (else (bool-val #f)))))
 
         )))
 
