@@ -72,6 +72,7 @@ To run an EOPL interpreter file, use the `-i` and `-t` flags to keep the REPL op
 
 ```powershell
 racket -i -t 'path/to/top.scm'
+racket -i -t 'C:\Users\Halakim Family\Desktop\שפות תכנות\let-lang\top.scm'
 ```
 
 You'll get a `>` prompt. Then you can run programs like:
