@@ -64,6 +64,37 @@
         ("set" identifier "=" expression)
         assign-exp)
 
+      ;; (type
+      ;;   ("number")
+      ;;   num-type)
+
+      ;; (type
+      ;;   ("boolean")
+      ;;   bool-type)
+
+      ;; (type
+      ;;   ("function")
+      ;;   proc-type)
+
+
+
+      ;; (expression
+      ;;   ("switch" expression "{" (separated-list type identifier "when" "(" expression ")" "=>" expression ",") "default" "=>" expression "}")
+      ;;   switch-exp)
+
+
+      (expression
+        ("::" identifier)
+        return-exp)
+
+      (expression
+        ("??" identifier)
+        empty-exp)
+
+      (expression
+        ("generator" "(" identifier ")" ":" "[" (arbno expression) "]" "yield" expression)
+        gen-exp)
+
       ))
 
   ;;;;;;;;;;;;;;;; sllgen boilerplate ;;;;;;;;;;;;;;;;

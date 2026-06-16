@@ -19,7 +19,8 @@
       (proc proc?))
     (ref-val
       (ref reference?))
-    )
+    (gen-val
+      (the-gen gen?)))
 
 ;;; extractors:
 
@@ -28,6 +29,12 @@
       (cases expval v
 	(num-val (num) num)
 	(else (expval-extractor-error 'num v)))))
+
+  (define expval->gen
+    (lambda (v)
+      (cases expval v
+  (gen-val (the-gen) the-gen)
+  (else (expval-extractor-error 'gen v)))))
 
   (define expval->bool
     (lambda (v)
@@ -57,6 +64,13 @@
   (define-datatype proc proc?
     (procedure
       (bvar symbol?)
+      (body expression?)
+      (env environment?)))
+
+  (define-datatype gen gen?
+    (generator
+      (var symbol?)
+      (vals reference?)
       (body expression?)
       (env environment?)))
 

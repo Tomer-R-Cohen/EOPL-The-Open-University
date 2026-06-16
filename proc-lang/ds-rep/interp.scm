@@ -1,8 +1,11 @@
 (module interp (lib "eopl.ss" "eopl")
   
-  ;; interpreter for the LET language.  The \commentboxes are the
-  ;; latex code for inserting the rules into the code in the book.
-  ;; These are too complicated to put here, see the text, sorry.
+  ;; interpreter for the PROC language, using the data structure
+  ;; representation of procedures.
+
+  ;; The \commentboxes are the latex code for inserting the rules into
+  ;; the code in the book. These are too complicated to put here, see
+  ;; the text, sorry. 
 
   (require "drscheme-init.scm")
 
@@ -12,11 +15,9 @@
 
   (provide value-of-program value-of)
 
-
 ;;;;;;;;;;;;;;;; the interpreter ;;;;;;;;;;;;;;;;
 
   ;; value-of-program : Program -> ExpVal
-  ;; Page: 71
   (define value-of-program 
     (lambda (pgm)
       (cases program pgm
@@ -24,7 +25,6 @@
           (value-of exp1 (init-env))))))
 
   ;; value-of : Exp * Env -> ExpVal
-  ;; Page: 71
   (define value-of
     (lambda (exp env)
       (cases expression exp
@@ -64,12 +64,23 @@
           (let ((val1 (value-of exp1 env)))
             (value-of body
               (extend-env var val1 env))))
+        
+        (proc-exp (var body)
+          (proc-val (procedure var body env)))
 
-        (letsum-exp (id exps1 exps2)
-            (let ((val (value-of (car exps1) env)))
-              ((car exps2) val))
+        (call-exp (rator rand)
+          (let ((proc (expval->proc (value-of rator env)))
+                (arg (value-of rand env)))
+            (apply-procedure proc arg)))
+
         )))
 
+  ;; apply-procedure : Proc * ExpVal -> ExpVal
+  ;; Page: 79
+  (define apply-procedure
+    (lambda (proc1 val)
+      (cases proc proc1
+        (procedure (var body saved-env)
+          (value-of body (extend-env var val saved-env))))))
 
   )
-

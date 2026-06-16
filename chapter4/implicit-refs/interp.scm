@@ -15,12 +15,8 @@
 
   (define instrument-let (make-parameter #f))
 
-  ;; say (instrument-let #t) to turn instrumentation on.
-  ;;     (instrument-let #f) to turn it off again.
-
 ;;;;;;;;;;;;;;;; the interpreter ;;;;;;;;;;;;;;;;
 
-  ;; value-of-program : Program -> ExpVal
   (define value-of-program 
     (lambda (pgm)
       (initialize-store!)
@@ -28,20 +24,14 @@
         (a-program (exp1)
           (value-of exp1 (init-env))))))
 
-  ;; value-of : Exp * Env -> ExpVal
-  ;; Page: 118, 119
   (define value-of
     (lambda (exp env)
       (cases expression exp
 
-        ;\commentbox{ (value-of (const-exp \n{}) \r) = \n{}}
         (const-exp (num) (num-val num))
 
-        ;\commentbox{ (value-of (var-exp \x{}) \r) 
-        ;              = (deref (apply-env \r \x{}))}
         (var-exp (var) (deref (apply-env env var)))
 
-        ;\commentbox{\diffspec}
         (diff-exp (exp1 exp2)
           (let ((val1 (value-of exp1 env))
                 (val2 (value-of exp2 env)))
@@ -50,7 +40,6 @@
               (num-val
                 (- num1 num2)))))
 
-        ;\commentbox{\zerotestspec}
         (zero?-exp (exp1)
           (let ((val1 (value-of exp1 env)))
             (let ((num1 (expval->num val1)))
@@ -58,14 +47,12 @@
                 (bool-val #t)
                 (bool-val #f)))))
               
-        ;\commentbox{\ma{\theifspec}}
         (if-exp (exp1 exp2 exp3)
           (let ((val1 (value-of exp1 env)))
             (if (expval->bool val1)
               (value-of exp2 env)
               (value-of exp3 env))))
 
-        ;\commentbox{\ma{\theletspecsplit}}
         (let-exp (var exp1 body)       
           (let ((v1 (value-of exp1 env)))
             (value-of body
@@ -100,21 +87,52 @@
               (value-of exp1 env))
             (num-val 27)))
 
-        )))
+        ;; (switch-exp (e1 typs ids bools exps defexp)
+        ;;   (let* ((val1 (value-of e1 env))
+        ;;         (type1 (cases expval val1
+        ;;                   (num-val (num) (num-type))
+        ;;                   (bool-val (bool) (bool-type))
+        ;;                   (proc-val (proc) (proc-type))
+        ;;                   (ref-val (ref) (eopl:error 'switch-exp "cannot switch on a reference")))))
+        ;;     (let loop-f ((typs typs) (ids ids) (bools bools) (exps exps) (env env))
+        ;;       (if (null? typs)
+        ;;         (value-of defexp env)
+        ;;         (if (cases type (car typs)
+        ;;               (num-type () (cases type type1 (num-type () #t) (else #f)))
+        ;;               (bool-type () (cases type type1 (bool-type () #t) (else #f)))
+        ;;               (proc-type () (cases type type1 (proc-type () #t) (else #f))))
+        ;;           (let ((new-env (extend-env (car ids) (newref val1) env)))
+        ;;             (if (expval->bool (value-of (car bools) new-env))
+        ;;               (value-of (car exps) new-env)
+        ;;               (loop-f (cdr typs) (cdr ids) (cdr bools) (cdr exps) env)))
+        ;;           (loop-f (cdr typs) (cdr ids) (cdr bools) (cdr exps) env))))))
 
 
-  ;; apply-procedure : Proc * ExpVal -> ExpVal
-  ;; Page: 119
+        (return-exp (gen)
+          (let ((g (expval->gen (value-of gen env))))
+            (cases gen g
+              (generator (var vals body env)
+                (let ((new-env (extend-env var (newref (car (deref vals))) env)))
+                  (begin
+                    (setref!
+                      vals
+                      (cdr (deref vals)))
+                    (value-of body new-env)))))))
+                
+        (empty-exp (gen)
+          (let ((g (expval->gen (value-of gen env))))
+            (cases gen g
+              (generator (var vals body env)
+                (if (null? (deref vals))
+                  (bool-val #f)
+                  (bool-val #t)))
+              (else (eopl:error 'empty-exp "variable isnt a generator")))))
 
-  ;; uninstrumented version
-  ;;  (define apply-procedure
-  ;;    (lambda (proc1 val)
-  ;;      (cases proc proc1
-  ;;        (procedure (var body saved-env)
-  ;;          (value-of body
-  ;;            (extend-env var (newref val) saved-env))))))
-  
-  ;; instrumented version
+        (gen-exp (var exps retexp)
+          (gen-val (generator var (newref (map (lambda (v) (value-of v env)) exps)) retexp env)))
+
+    )))
+
   (define apply-procedure
     (lambda (proc1 arg)
       (cases proc proc1
@@ -131,10 +149,8 @@
                   (pretty-print (store->readable (get-store-as-list)))
                   (eopl:printf "~%"))
                   23)
-              (value-of body new-env)))))))  
+              (value-of body new-env)))))))
 
-  ;; store->readable : Listof(List(Ref,Expval)) 
-  ;;                    -> Listof(List(Ref,Something-Readable))
   (define store->readable
     (lambda (l)
       (map
@@ -145,7 +161,3 @@
         l)))
 
   )
-  
-
-
-  

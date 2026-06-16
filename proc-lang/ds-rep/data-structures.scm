@@ -1,6 +1,6 @@
 (module data-structures (lib "eopl.ss" "eopl")
 
- ;; data structures for proc-lang/proc-rep
+  ;; data structures for proc-lang/ds-rep
 
   (require "lang.scm")                  ; for expression?
 
@@ -49,8 +49,12 @@
 ;;;;;;;;;;;;;;;; procedures ;;;;;;;;;;;;;;;;
 
   ;; proc? : SchemeVal -> Bool
-  ;; Page: 79
-  (define proc? procedure?)
+  ;; procedure : Var * Exp * Env -> Proc
+  (define-datatype proc proc?
+    (procedure
+      (var symbol?)
+      (body expression?)
+      (env environment?)))
 
 ;;;;;;;;;;;;;;;; environment structures ;;;;;;;;;;;;;;;;
 

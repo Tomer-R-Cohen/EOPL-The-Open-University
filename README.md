@@ -55,7 +55,7 @@ The EOPL source files use old syntax that doesn't work with newer Racket.
 In any file that contains:
 
 ```scheme
-(provide (all-defined-out))
+(provide (all-defined))
 ```
 
 Change it to:

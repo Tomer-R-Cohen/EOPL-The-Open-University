@@ -1,6 +1,6 @@
 (module interp (lib "eopl.ss" "eopl")
   
-  ;; interpreter for the PROC language, using the data structure
+  ;; interpreter for the PROC language, using the procedural
   ;; representation of procedures.
 
   ;; The \commentboxes are the latex code for inserting the rules into
@@ -60,27 +60,47 @@
               (value-of exp3 env))))
 
         ;\commentbox{\ma{\theletspecsplit}}
-        (let-exp (var exp1 body)       
+        (let-exp (tmps exp1 body)       
           (let ((val1 (value-of exp1 env)))
-            (value-of body
-              (extend-env var val1 env))))
+            (cases temps tmps
+              (single-temp (id)
+                (value-of body
+                  (extend-env id val1 env)))
+              (multi-temp (ids)
+                (letrec ((f (lambda (x y env) 
+                              (if (null?  x)
+                                env
+                                (if (eq? (car x) '_)
+                                  (f (cdr x) (cdr y) env)
+                                  (f (cdr x) (cdr y) (extend-env (car x) (car y) env))))))))
+                  (value-of body (f ids (expval->tuple val1) env))))))
         
         (proc-exp (var body)
-          (proc-val (procedure var body)))
+          (proc-val (procedure var body env)))
 
         (call-exp (rator rand)
           (let ((proc (expval->proc (value-of rator env)))
                 (arg (value-of rand env)))
-            (apply-procedure proc arg env)))
+            (apply-procedure proc arg)))
+
+
+        (tuple-exp (exps)
+          (tuple-val (map (lambda (x) (value-of x env)) exps))
 
         )))
 
+
+  ;; procedure : Var * Exp * Env -> Proc
+  ;; Page: 79
+  (define procedure
+    (lambda (var body env)
+      (lambda (val)
+        (value-of body (extend-env var val env)))))
+  
   ;; apply-procedure : Proc * ExpVal -> ExpVal
   ;; Page: 79
   (define apply-procedure
-    (lambda (proc1 val env)
-      (cases proc proc1
-        (procedure (var body)
-          (value-of body (extend-env var val env))))))
+    (lambda (proc val)
+      (proc val)))
 
   )
