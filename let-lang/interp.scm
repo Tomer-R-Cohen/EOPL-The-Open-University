@@ -12,7 +12,6 @@
 
   (provide value-of-program value-of)
 
-
 ;;;;;;;;;;;;;;;; the interpreter ;;;;;;;;;;;;;;;;
 
   ;; value-of-program : Program -> ExpVal
@@ -55,9 +54,13 @@
         ;\commentbox{\ma{\theifspec}}
         (if-exp (exp1 exp2 exp3)
           (let ((val1 (value-of exp1 env)))
-            (if (expval->bool val1)
-              (value-of exp2 env)
-              (value-of exp3 env))))
+            (cases expval val1
+              (bool-val (b) (if b
+                              (value-of exp2 env)
+                              (value-of exp3 env)))
+              (num-val (n) (if (zero? n)
+                              (value-of exp3 env)
+                              (value-of exp2 env))))))
 
         ;\commentbox{\ma{\theletspecsplit}}
         (let-exp (var exp1 body)       
@@ -65,9 +68,32 @@
             (value-of body
               (extend-env var val1 env))))
 
-        (letsum-exp (id exps1 exps2)
-            (let ((val (value-of (car exps1) env)))
-              ((car exps2) val))
+        ;; casting extention
+        (cast-exp (typ exp1)
+          (let ((val1 (value-of exp1 env)))
+            (cases type typ
+              (int-type () (cases expval val1
+                              (bool-val (b) (if b
+                                              (num-val 1)
+                                              (num-val 0)))
+                              (else val1)))
+              (bool-type () (cases expval val1
+                              (num-val (n) (if (zero? n)
+                                              (bool-val #f)
+                                              (bool-val #t)))
+                              (else val1))))))
+
+        (do-exp (ids inits steps bools results)
+          (letrec ((f (lambda (ids inits steps bools results)
+                        (if (null? (car ids)
+                          ((if (null? (car bools))
+                              ((if (null? (car steps));; increment inits with steps
+                                  (f () inits steps bools results)
+                                  ()))
+                              ((if (expval->bool (value-of (car bools) env) env)
+                                  (value-of (car results))
+                                  (f () inits steps (cdr bools) (cdr results))))))
+                          (extend-env (car ids) (value-of (car inits) env))))))))) ;; inits the ids
         )))
 
 

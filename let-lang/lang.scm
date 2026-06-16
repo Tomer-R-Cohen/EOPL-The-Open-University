@@ -1,10 +1,12 @@
-(module lang (lib "eopl.ss" "eopl")                
-  
-  ;; language for IMPLICIT-REFS
+(module lang
 
+  ;; grammar for the LET language
+
+  (lib "eopl.ss" "eopl")                
+  
   (require "drscheme-init.scm")
   
-  (provide (all-defined-out))
+  (provide (all-defined-out)) 
 
   ;;;;;;;;;;;;;;;; grammatical specification ;;;;;;;;;;;;;;;;
   
@@ -40,45 +42,27 @@
        ("let" identifier "=" expression "in" expression)
        let-exp)   
 
-      ;; add type - Q1
-      (expression
-       ("proc" "(" type identifier ")" expression)
-       proc-exp)
+
+      ;; casting extentions
+      (type
+        ("int")
+        int-type)
+
+      (type
+        ("bool")
+        bool-type)
 
       (expression
-       ("(" expression expression ")")
-       call-exp)
+        ("<" type ">" "(" expression ")")
+        cast-exp)
 
+      ;; do extention
       (expression
-        ("letrec"
-          (arbno identifier "(" identifier ")" "=" expression)
-           "in" expression)
-        letrec-exp)
-      
-      (expression
-        ("begin" expression (arbno ";" expression) "end")
-        begin-exp)
-
-      ;; new for implicit-refs
-
-      (expression
-        ("set" identifier "=" expression)
-        assign-exp)
-
-      ;; new for Q1
-      (type ("int") int-type)
-
-      (type ("bool") bool-type)
-
-      (type ("proc") proc-type)
-
-      (expression
-        ("overload" identifier "with" "(" type identifier ")" expression)
-        overload-exp)
-
+        ("do" "(" (arbno "<" identifier expression expression ">") (arbno "["  expression expression "]") ")")
+        do-exp)
 
       ))
-
+  
   ;;;;;;;;;;;;;;;; sllgen boilerplate ;;;;;;;;;;;;;;;;
   
   (sllgen:make-define-datatypes the-lexical-spec the-grammar)

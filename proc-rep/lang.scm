@@ -37,7 +37,7 @@
       (expression (identifier) var-exp)
 
       (expression
-       ("let" identifier "=" expression "in" expression)
+       ("let" temps "=" expression "in" expression)
        let-exp)   
 
       (expression
@@ -47,6 +47,18 @@
       (expression
        ("(" expression expression ")")
        call-exp)
+
+      (expression 
+        ("<" (separated-list expression ",") ">")
+        temp-exp)
+
+      (expression 
+        (identifier)
+        single-temp)
+
+      (expression 
+        ("[" (separated-list "_," identifier ",") "]")
+        multi-temp)
       
       ))
 

@@ -60,10 +60,26 @@
               (value-of exp3 env))))
 
         ;\commentbox{\ma{\theletspecsplit}}
-        (let-exp (var exp1 body)       
+        (let-exp (tmps exp1 body)       
           (let ((val1 (value-of exp1 env)))
-            (value-of body
-              (extend-env var val1 env))))
+            (cases temps tmps
+              (single-temp (var) 
+                (value-of body
+                  (extend-env var val1 env)))
+              (multi-temp (vars)
+                (letrec ((f (lambda (exps vals env)
+                              (if (null? exps)
+                                (value-of body env)
+                                (if (eq? (car exps) '_)
+                                  (f (cdr exps) (cdr vals) env)
+                                  (f (cdr exps) (cdr vals) (extend-env (car exps) (car vals) env)))))))
+                  (f vars (expval->tuple val1) env))))))
+
+
+
+
+            ;; (value-of body
+            ;;   (extend-env var val1 env))))
         
         (proc-exp (var body)
           (proc-val (procedure var body env)))
@@ -73,44 +89,22 @@
                 (arg (value-of rand env)))
             (apply-procedure proc arg)))
 
-        (get-type-exp (id)
-          (let ((val (value-of id env)))
-            (cases expval val
-              (num-val (n) (exp-type (num-type)))
-              (bool-val (b) (exp-type (bool-type)))
-              (proc-val (p) (exp-type (proc-type))))))
 
-        (isBool?-exp (ex)
-          (let ((val (value-of ex env)))
-            (cases expval val
-              (bool-val (b) (bool-val #t))
-              (exp-type (t)
-                (cases type t
-                  (bool-type () (bool-val #t))
-                  (else (bool-val #f))))
-              (else (bool-val #f)))))
+        (fold-exp (proc1 acc vals)
+          (let ((init-val (value-of acc env))
+                (f (lambda (val acc)
+                      (apply-procedure
+                        (expval->proc
+                          (apply-procedure (expval->proc (value-of proc1 env)) val))
+                        acc)))
+                (lst (convert-lst vals)))
+            (foldl f init-val lst)))
 
-        (isNum?-exp (ex)
-          (let ((val (value-of ex env)))
-            (cases expval val
-              (num-val (n) (bool-val #t))
-              (exp-type (t)
-                (cases type t
-                  (num-type () (bool-val #t))
-                  (else (bool-val #f))))
-              (else (bool-val #f)))))
+        (tuple-exp (exps)
+          (tuple-val (map (lambda (e) (value-of e env)) exps)))
 
-        (isProc?-exp (ex)
-          (let ((val (value-of ex env)))
-            (cases expval val
-              (proc-val (p) (bool-val #t))
-              (exp-type (t)
-                (cases type t
-                  (proc-type () (bool-val #t))
-                  (else (bool-val #f))))
-              (else (bool-val #f)))))
 
-        )))
+        
 
   ;; apply-procedure : Proc * ExpVal -> ExpVal
   ;; Page: 79
