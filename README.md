@@ -2,7 +2,6 @@
 
 ## Requirements
 
-- Windows PC
 - [Racket](https://racket-lang.org) (latest version)
 - [VS Code](https://code.visualstudio.com)
 
