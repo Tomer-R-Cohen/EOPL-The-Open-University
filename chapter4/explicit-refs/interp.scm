@@ -125,18 +125,17 @@
       (cases proc proc1
         (procedure (var body saved-env)
 	  (let ((r arg))
-      (let ((new-env (extend-env var r saved-env)))
-        (if (instrument-let)
-          (begin
-            (eopl:printf
-              "entering body of proc ~s with env =~%"
-              var)
-            (pretty-print (env->list new-env))
-            (eopl:printf "store =~%")
-            (pretty-print (store->readable (get-store-as-list)))
-            (eopl:printf "~%"))
-          'ok)
-        (value-of body new-env)))))))
+	    (let ((new-env (extend-env var r saved-env)))
+	      (if (instrument-let)
+		(begin
+		  (eopl:printf
+		    "entering body of proc ~s with env =~%"
+		    var)
+		  (pretty-print (env->list new-env))
+                  (eopl:printf "store =~%")
+                  (pretty-print (store->readable (get-store-as-list)))
+                  (eopl:printf "~%")))
+              (value-of body new-env)))))))
 
 
   ;; store->readable : Listof(List(Ref,Expval)) 

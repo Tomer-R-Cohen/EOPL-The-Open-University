@@ -16,9 +16,7 @@
     (bool-val
       (boolean boolean?))
     (proc-val 
-      (proc proc?))
-    (tuple-val
-      (tuple list?)))
+      (proc proc?)))
 
 ;;; extractors:
 
@@ -47,12 +45,6 @@
     (lambda (variant value)
       (eopl:error 'expval-extractors "Looking for a ~s, found ~s"
 	variant value)))
-
-  (define expval->tuple
-    (lambda (v)
-      (cases expval v
-  (tuple-val (tuple) tuple)
-  (else (expval-extractor-error 'tuple v)))))
 
 ;;;;;;;;;;;;;;;; procedures ;;;;;;;;;;;;;;;;
 

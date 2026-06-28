@@ -4,7 +4,7 @@
 
   (require "drscheme-init.scm")
   
-  (provide (all-defined-out))
+  (provide (all-defined))
 
   ;;;;;;;;;;;;;;;; grammatical specification ;;;;;;;;;;;;;;;;
   
@@ -63,9 +63,6 @@
       (expression
         ("set" identifier "=" expression)
         assign-exp)
-
-
-
 
       ))
 

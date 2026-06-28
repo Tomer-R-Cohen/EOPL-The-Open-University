@@ -60,26 +60,10 @@
               (value-of exp3 env))))
 
         ;\commentbox{\ma{\theletspecsplit}}
-        (let-exp (tmps exp1 body)       
+        (let-exp (var exp1 body)       
           (let ((val1 (value-of exp1 env)))
-            (cases temps tmps
-              (single-temp (var) 
-                (value-of body
-                  (extend-env var val1 env)))
-              (multi-temp (vars)
-                (letrec ((f (lambda (exps vals env)
-                              (if (null? exps)
-                                (value-of body env)
-                                (if (eq? (car exps) '_)
-                                  (f (cdr exps) (cdr vals) env)
-                                  (f (cdr exps) (cdr vals) (extend-env (car exps) (car vals) env)))))))
-                  (f vars (expval->tuple val1) env))))))
-
-
-
-
-            ;; (value-of body
-            ;;   (extend-env var val1 env))))
+            (value-of body
+              (extend-env var val1 env))))
         
         (proc-exp (var body)
           (proc-val (procedure var body env)))
@@ -89,22 +73,7 @@
                 (arg (value-of rand env)))
             (apply-procedure proc arg)))
 
-
-        (fold-exp (proc1 acc vals)
-          (let ((init-val (value-of acc env))
-                (f (lambda (val acc)
-                      (apply-procedure
-                        (expval->proc
-                          (apply-procedure (expval->proc (value-of proc1 env)) val))
-                        acc)))
-                (lst (convert-lst vals)))
-            (foldl f init-val lst)))
-
-        (tuple-exp (exps)
-          (tuple-val (map (lambda (e) (value-of e env)) exps)))
-
-
-        
+        )))
 
   ;; apply-procedure : Proc * ExpVal -> ExpVal
   ;; Page: 79

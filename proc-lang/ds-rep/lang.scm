@@ -35,19 +35,9 @@
        if-exp)
 
       (expression (identifier) var-exp)
-      
-      ;;tuple extention
-      (temps
-        (identifier)
-        single-temp)
-
-      ;;tuple extention
-      (temps
-        ("[" (separated-list identifier "_") "]")
-        multi-temp)
 
       (expression
-       ("let" temps "=" expression "in" expression)
+       ("let" identifier "=" expression "in" expression)
        let-exp)   
 
       (expression
@@ -57,16 +47,6 @@
       (expression
        ("(" expression expression ")")
        call-exp)
-
-      (expression
-        ("fold" expression expression "[" (separated-list expression ",") "]")
-        fold-exp)
-
-      (expression
-        ("<" (separated-list expression ",") ">")
-        tuple-exp)
-
-      
       
       ))
 

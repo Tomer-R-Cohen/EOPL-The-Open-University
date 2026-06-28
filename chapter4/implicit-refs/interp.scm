@@ -100,7 +100,6 @@
               (value-of exp1 env))
             (num-val 27)))
 
-
         )))
 
 
@@ -130,8 +129,7 @@
                   (pretty-print (env->list new-env)) 
                   (eopl:printf "store =~%")
                   (pretty-print (store->readable (get-store-as-list)))
-                  (eopl:printf "~%"))
-                  23)
+                  (eopl:printf "~%")))
               (value-of body new-env)))))))  
 
   ;; store->readable : Listof(List(Ref,Expval)) 
