@@ -2,7 +2,6 @@
 
 ## Requirements
 
-- Windows PC
 - [Racket](https://racket-lang.org) (latest version)
 - [VS Code](https://code.visualstudio.com)
 
@@ -55,7 +54,7 @@ The EOPL source files use old syntax that doesn't work with newer Racket.
 In any file that contains:
 
 ```scheme
-(provide (all-defined-out))
+(provide (all-defined))
 ```
 
 Change it to:
@@ -72,7 +71,6 @@ To run an EOPL interpreter file, use the `-i` and `-t` flags to keep the REPL op
 
 ```powershell
 racket -i -t 'path/to/top.scm'
-racket -i -t 'C:\Users\Halakim Family\Desktop\שפות תכנות\let-lang\top.scm'
 ```
 
 You'll get a `>` prompt. Then you can run programs like:
