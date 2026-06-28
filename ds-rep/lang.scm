@@ -38,19 +38,6 @@
 
       (expression
        ("let" identifier "=" expression "in" expression)
-      
-      ;;tuple extention
-      (temps
-        (identifier)
-        single-temp)
-
-      ;;tuple extention
-      (temps
-        ("[" (separated-list identifier "_") "]")
-        multi-temp)
-
-      (expression
-       ("let" temps "=" expression "in" expression)
        let-exp)   
 
       (expression
@@ -60,41 +47,6 @@
       (expression
        ("(" expression expression ")")
        call-exp)
-<<<<<<< HEAD
-=======
-
-<<<<<<<< HEAD:proc-lang/proc-rep/lang.scm
-========
-      (expression
-        ("fold" expression expression "[" (separated-list expression ",") "]")
-        fold-exp)
->>>>>>>> 9e0672b72ed8ba3b493f99e34ebc81ba79605a27:proc-lang/ds-rep/lang.scm
-
-      (expression
-        ("<" (separated-list expression ",") ">")
-        tuple-exp)
-
-<<<<<<<< HEAD:proc-lang/proc-rep/lang.scm
-      (temps
-        (identifier)
-        single-temp)
-
-      (temp-id
-        (identifier)
-        temp-identifier)
-
-      (temp-id
-        ("_")
-        temp-underscore)
-
-      (temps
-        ("[" (separated-list temp-id ",") "]")
-        multi-temp)
-
-========
->>>>>>>> 9e0672b72ed8ba3b493f99e34ebc81ba79605a27:proc-lang/ds-rep/lang.scm
-      
->>>>>>> 9e0672b72ed8ba3b493f99e34ebc81ba79605a27
       
       ))
 

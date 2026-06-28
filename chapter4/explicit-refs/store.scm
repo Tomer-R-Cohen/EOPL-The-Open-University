@@ -50,8 +50,7 @@
         (if (instrument-newref)
             (eopl:printf 
              "newref: allocating location ~s with initial contents ~s~%"
-             next-ref val)
-             23)                     
+             next-ref val))                     
         next-ref)))                     
 
   ;; deref : Ref -> ExpVal
